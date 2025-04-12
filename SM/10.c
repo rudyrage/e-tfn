@@ -49,6 +49,8 @@ int main() {
   printf("Generated Random Sequence:\n");
   for (int i = 0; i < SEQUENCE_LENGTH; i++) {
     printf("%d ", sequence[i]);
+    if (i > 0 && i % 5 == 0)
+      putchar('\n');
   }
   printf("\n\n");
 
