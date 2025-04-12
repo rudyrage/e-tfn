@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-void caesar_cipher(char *text, int shift) {
+void caesar_encrypt(char *text, int shift) {
     for (int i = 0; text[i] != '\0'; ++i) {
         if (isalpha(text[i])) {
             char base = islower(text[i]) ? 'a' : 'A';
@@ -10,18 +10,30 @@ void caesar_cipher(char *text, int shift) {
     }
 }
 
+void caesar_decrypt(char *text, int shift) {
+    for (int i = 0; text[i] != '\0'; ++i) {
+        if (isalpha(text[i])) {
+            char base = islower(text[i]) ? 'a' : 'A';
+            text[i] = (text[i] - base - shift + 26) % 26 + base;
+        }
+    }
+}
+
 int main() {
-    char input_text[1000];
-    int shift_value;
+    char text[1000];
+    int shift;
 
     printf("Enter text: ");
-    fgets(input_text, sizeof(input_text), stdin);
+    scanf("%s", text); 
 
     printf("Enter shift: ");
-    scanf("%d", &shift_value);
+    scanf("%d", &shift);
 
-    caesar_cipher(input_text, shift_value);
-    printf("Encrypted text: %s", input_text);
+    caesar_encrypt(text, shift);
+    printf("Encrypted: %s\n", text);
+
+    caesar_decrypt(text, shift);
+    printf("Decrypted: %s\n", text);
 
     return 0;
 }

@@ -1,51 +1,82 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX 3
+#define MOD 26
 
-void encrypt(char message[], int key[MAX][MAX]) {
-    int len = strlen(message);
-    int matrix[MAX][1];
-    
-    printf("Cipher Text: ");
-    
-    for (int i = 0; i < len; i += MAX) {
-        for (int j = 0; j < MAX; j++) {
-            matrix[j][0] = message[i + j] - 'A';
-        }
-        
-        for (int j = 0; j < MAX; j++) {
-            int sum = 0;
-            for (int k = 0; k < MAX; k++) {
-                sum += key[j][k] * matrix[k][0];
-            }
-            printf("%c", (sum % 26) + 'A');
-        }
+
+int mod(int a, int m) {
+    int res = a % m;
+    return res < 0 ? res + m : res;
+}
+
+
+int mod_inverse(int a, int m) {
+    a = mod(a, m);
+    for (int x = 1; x < m; x++) {
+        if ((a * x) % m == 1) return x;
     }
-    printf("\n");
+    return -1; 
+}
+
+
+void encrypt(char *message, int key_matrix[2][2], char *encrypted) {
+    int vector[2];
+    for (int i = 0; i < 2; i++) {
+        vector[i] = message[i] - 'A';
+    }
+
+    for (int i = 0; i < 2; i++) {
+        encrypted[i] = mod(key_matrix[i][0] * vector[0] + key_matrix[i][1] * vector[1], MOD) + 'A';
+    }
+    encrypted[2] = '\0';
+}
+
+
+void decrypt(char *cipher, int key_matrix[2][2], char *decrypted) {
+    int det = mod(key_matrix[0][0]*key_matrix[1][1] - key_matrix[0][1]*key_matrix[1][0], MOD);
+    int det_inv = mod_inverse(det, MOD);
+
+    if (det_inv == -1) {
+        printf("Key matrix not invertible modulo 26.\n");
+        return;
+    }
+
+    int inv_matrix[2][2];
+    inv_matrix[0][0] = mod( key_matrix[1][1] * det_inv, MOD);
+    inv_matrix[0][1] = mod(-key_matrix[0][1] * det_inv, MOD);
+    inv_matrix[1][0] = mod(-key_matrix[1][0] * det_inv, MOD);
+    inv_matrix[1][1] = mod( key_matrix[0][0] * det_inv, MOD);
+
+    int vector[2];
+    for (int i = 0; i < 2; i++) {
+        vector[i] = cipher[i] - 'A';
+    }
+
+    for (int i = 0; i < 2; i++) {
+        decrypted[i] = mod(inv_matrix[i][0] * vector[0] + inv_matrix[i][1] * vector[1], MOD) + 'A';
+    }
+    decrypted[2] = '\0';
 }
 
 int main() {
-    char message[100];
-    int key[MAX][MAX] = {
-        {6, 24, 1},
-        {13, 16, 10},
-        {20, 17, 15}
-    };
+    char message[3], encrypted[3], decrypted[3];
+    int key_matrix[2][2];
 
-    printf("Enter message (only uppercase): ");
-    fgets(message, sizeof(message), stdin);
-    
-    int len = strlen(message);
-    if (len % MAX != 0) {
-        int pad_len = MAX - (len % MAX);
-        for (int i = 0; i < pad_len; i++) {
-            message[len + i] = 'X';
+    printf("Enter 2-letter message: ");
+    scanf("%2s", message);
+
+    printf("Enter 2x2 key matrix:\n");
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            scanf("%d", &key_matrix[i][j]);
         }
-        message[len + pad_len] = '\0';
     }
 
-    encrypt(message, key);
-    
+    encrypt(message, key_matrix, encrypted);
+    printf("Encrypted text: %s\n", encrypted);
+
+    decrypt(encrypted, key_matrix, decrypted);
+    printf("Decrypted text: %s\n", decrypted);
+
     return 0;
 }

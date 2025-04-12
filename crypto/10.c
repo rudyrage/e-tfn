@@ -16,8 +16,8 @@ long long int power_mod(long long int base, long long int exp, long long int mod
 int main() {
     long long int p, g, a_private, b_private, a_public, b_public, shared_secret_a, shared_secret_b;
     
-    p = 23; // prime number
-    g = 5;  // generator
+    p = 23; 
+    g = 5;  
     
     printf("Enter private key for A: ");
     scanf("%lld", &a_private);

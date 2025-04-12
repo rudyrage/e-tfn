@@ -1,38 +1,47 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
-void vernam_cipher(char *plaintext, char *key, char *ciphertext) {
-    int plaintext_len = strlen(plaintext);
-    int key_len = strlen(key);
-    int i;
 
-    for (i = 0; i < plaintext_len; i++) {
-        if (isalpha(plaintext[i])) {
-            int base = isupper(plaintext[i]) ? 'A' : 'a';
-            ciphertext[i] = ((plaintext[i] - base) ^ (key[i] - base)) + base;
-        } else {
-            ciphertext[i] = plaintext[i];
-        }
+void vernam(const char *input, const char *key, char *output) {
+    int len = strlen(input);
+    for (int i = 0; i < len; i++) {
+        output[i] = input[i] ^ key[i];
     }
-    ciphertext[i] = '\0';
+    output[len] = '\0';
 }
 
 int main() {
     char plaintext[100];
     char key[100];
     char ciphertext[100];
+    char deciphered[100];
 
+    
     printf("Enter the plaintext: ");
-    fgets(plaintext, sizeof(plaintext), stdin);
-    plaintext[strcspn(plaintext, "\n")] = '\0'; 
+    scanf("%99s", plaintext);
 
-    printf("Enter the key: ");
-    fgets(key, sizeof(key), stdin);
-    key[strcspn(key, "\n")] = '\0'; 
+    
+    printf("Enter the key (same length as plaintext): ");
+    scanf("%99s", key);
 
-    vernam_cipher(plaintext, key, ciphertext);
-    printf("Ciphertext: %s\n", ciphertext);
+    if (strlen(plaintext) != strlen(key)) {
+        printf("Error: The key must be the same length as the plaintext.\n");
+        return 1;
+    }
+
+    
+    vernam(plaintext, key, ciphertext);
+
+    
+    printf("Ciphertext:");
+    for (int i = 0; i < strlen(plaintext); i++) {
+        printf("%02x ", (unsigned char)ciphertext[i]);
+    }
+    printf("\n");
+
+    
+    vernam(ciphertext, key, deciphered);
+    printf("Deciphered text: %s\n", deciphered);
 
     return 0;
 }

@@ -1,6 +1,12 @@
 #include <stdio.h>
 
-long long int extended_euclidean_algorithm(long long int a, long long int b, long long int *x, long long int *y) {
+long long int extended_euclidean_algorithm
+(
+long long int a, 
+long long int b, 
+long long int *x, 
+long long int *y
+) {
     if (b == 0) {
         *x = 1;
         *y = 0;
